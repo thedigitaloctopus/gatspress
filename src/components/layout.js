@@ -1,55 +1,42 @@
-/**
- * Layout component that queries for data
- * with Gatsby's useStaticQuery component
- *
- * See: https://www.gatsbyjs.com/docs/use-static-query/
- */
+import React, { useState } from "react"
+import Header from "./Header"
+import Footer from "./Footer"
 
-import * as React from "react"
-import PropTypes from "prop-types"
-import { useStaticQuery, graphql } from "gatsby"
+import FooterMenusWidgets from "./FooterMenusWidgets"
+import MenuModal from "./MenuModal"
 
-import Header from "./header"
-import "./layout.css"
+const backdropClasses = " backdrop"
 
-const Layout = ({ children }) => {
-  const data = useStaticQuery(graphql`
-    query SiteTitleQuery {
-      site {
-        siteMetadata {
-          title
-        }
-      }
-    }
-  `)
+const Layout = ({ children, bodyClass }) => {
+  const [backdropActive, setBackdropActive] = useState(false)
+
+  const toggleBackdrop = (e, active) => {
+    e.preventDefault()
+    setBackdropActive(active)
+  }
 
   return (
-    <>
-      <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: 960,
-          padding: `0 1.0875rem 1.45rem`,
-        }}
-      >
-        <main>{children}</main>
-        <footer
-          style={{
-            marginTop: `2rem`,
-          }}
-        >
-          © {new Date().getFullYear()}, Built with
-          {` `}
-          <a href="https://www.gatsbyjs.com">Gatsby</a>
-        </footer>
-      </div>
-    </>
-  )
-}
+    <div
+      id={"GatsbyBody"}
+      className={
+        bodyClass +
+        " showing-menu-modal showing-modal" +
+        (backdropActive ? backdropClasses : "")
+      }
+    >
+      <Header toggleBackdrop={toggleBackdrop} />
 
-Layout.propTypes = {
-  children: PropTypes.node.isRequired,
+      <MenuModal isActive={backdropActive} toggleBackdrop={toggleBackdrop} />
+
+      <main id="site-content" role="main">
+        {children}
+      </main>
+
+      <FooterMenusWidgets />
+
+      <Footer />
+    </div>
+  )
 }
 
 export default Layout
